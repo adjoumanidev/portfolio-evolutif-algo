@@ -1,0 +1,328 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Calendar, Edit3, FileText, Home } from 'lucide-react'
+import Link from 'next/link'
+import { fetchLessons, fetchProfile, fetchFinalAssessment, type Lesson, type Profile, type FinalAssessment } from '@/lib/supabase'
+import ModernBackground from '@/components/ModernBackground'
+import CustomCursor from '@/components/CustomCursor'
+import ProfilePhoto from '@/components/ProfilePhoto'
+
+export default function LessonsPageV3() {
+  const [lessons, setLessons] = useState<Lesson[]>([])
+  const [profile, setProfile] = useState<Profile | null>(null)
+  const [finalAssessment, setFinalAssessment] = useState<FinalAssessment | null>(null)
+  const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [showBilan, setShowBilan] = useState(false)
+
+  useEffect(() => {
+    loadData()
+  }, [])
+
+  const loadData = async () => {
+    try {
+      const [lessonsData, profileData, bilanData] = await Promise.all([
+        fetchLessons(),
+        fetchProfile(),
+        fetchFinalAssessment(),
+      ])
+      setLessons(lessonsData)
+      setProfile(profileData)
+      setFinalAssessment(bilanData)
+      
+      // Sélectionner la première leçon par défaut
+      if (lessonsData.length > 0) {
+        setSelectedLesson(lessonsData[0])
+      }
+    } catch (error) {
+      console.error('Erreur chargement:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+        <div className="w-16 h-16 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin" />
+      </div>
+    )
+  }
+
+  return (
+    <>
+      <CustomCursor />
+      <ModernBackground />
+      
+      <div className="relative min-h-screen text-white">
+        {/* Header avec Profil */}
+        <header className="sticky top-0 z-50 backdrop-blur-xl bg-slate-950/80 border-b border-white/10">
+          <div className="container mx-auto px-4 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                {profile?.photo_url && (
+                  <ProfilePhoto
+                    photoUrl={profile.photo_url}
+                    name={profile.name}
+                    size="small"
+                    />
+                )}
+                <div>
+                  <h1 className="text-2xl font-bold">AlgoMaster Portfolio</h1>
+                  <p className="text-sm text-gray-400">{profile?.title}</p>
+                </div>
+              </div>
+              
+              <div className="flex gap-4">
+                <Link
+                  href="/"
+                  className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 rounded-xl transition-colors"
+                >
+                  <Home className="w-4 h-4" />
+                  <span className="hidden md:inline">Accueil</span>
+                </Link>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        {/* Navigation par onglets (Leçons / Bilan Final) */}
+        <div className="container mx-auto px-4 py-6">
+          <div className="flex gap-4 mb-6 border-b border-white/10">
+            <button
+              onClick={() => setShowBilan(false)}
+              className={`px-6 py-3 font-semibold transition-all border-b-2 ${
+                !showBilan
+                  ? 'border-cyan-500 text-cyan-400'
+                  : 'border-transparent text-gray-400 hover:text-white'
+              }`}
+            >
+              Leçons
+            </button>
+            <button
+              onClick={() => setShowBilan(true)}
+              className={`px-6 py-3 font-semibold transition-all border-b-2 ${
+                showBilan
+                  ? 'border-cyan-500 text-cyan-400'
+                  : 'border-transparent text-gray-400 hover:text-white'
+              }`}
+            >
+              Bilan Final
+            </button>
+          </div>
+
+          <AnimatePresence mode="wait">
+            {!showBilan ? (
+              <motion.div
+                key="lessons"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+              >
+                {/* Onglets des titres de leçons */}
+                <div className="mb-6 overflow-x-auto">
+                  <div className="flex gap-2 min-w-max pb-2">
+                    {lessons.map((lesson) => (
+                      <button
+                        key={lesson.id}
+                        onClick={() => setSelectedLesson(lesson)}
+                        className={`px-6 py-3 rounded-xl font-medium transition-all whitespace-nowrap ${
+                          selectedLesson?.id === lesson.id
+                            ? 'bg-gradient-to-r from-cyan-600 to-blue-700 text-white shadow-lg'
+                            : 'bg-white/5 text-gray-300 hover:bg-white/10'
+                        }`}
+                      >
+                        {lesson.title}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Contenu de la leçon sélectionnée */}
+                {selectedLesson && (
+                  <motion.div
+                    key={selectedLesson.id}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    className="glass rounded-3xl p-8 border border-white/10"
+                  >
+                    {/* Header de la leçon */}
+                    <div className="mb-8 pb-6 border-b border-white/10">
+                      <div className="flex items-center justify-between mb-4">
+                        <h2 className="text-3xl font-bold text-cyan-400">
+                          {selectedLesson.title}
+                        </h2>
+                        <Link
+                          href={`/admin/dashboard-v3`}
+                          className="flex items-center gap-2 px-4 py-2 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 rounded-xl transition-colors"
+                        >
+                          <Edit3 className="w-4 h-4" />
+                          Modifier
+                        </Link>
+                      </div>
+                      <div className="flex items-center gap-4 text-sm text-gray-400">
+                        <span className="flex items-center gap-1">
+                          <Calendar className="w-4 h-4" />
+                          {new Date(selectedLesson.date).toLocaleDateString('fr-FR', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                          })}
+                        </span>
+                        {selectedLesson.week_number && (
+                          <span>Semaine {selectedLesson.week_number}</span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* 1. Journal d'apprentissage réflexif */}
+                    <div className="mb-8">
+                      <h3 className="text-xl font-bold text-white mb-4 pb-2 border-b-2 border-cyan-500">
+                        1. Journal d'apprentissage réflexif
+                      </h3>
+                      <p className="text-gray-300 whitespace-pre-line leading-relaxed">
+                        {selectedLesson.journal_reflexif}
+                      </p>
+                    </div>
+
+                    {/* 2. Synthèse personnelle des concepts clés */}
+                    <div className="mb-8">
+                      <h3 className="text-xl font-bold text-white mb-4 pb-2 border-b-2 border-cyan-500">
+                        2. Synthèse personnelle des concepts clés
+                      </h3>
+                      <p className="text-gray-300 whitespace-pre-line leading-relaxed">
+                        {selectedLesson.synthese_personnelle}
+                      </p>
+                    </div>
+
+                    {/* 3. Application pratique dans mon contexte */}
+                    <div className="mb-8">
+                      <h3 className="text-xl font-bold text-white mb-4 pb-2 border-b-2 border-cyan-500">
+                        3. Application pratique dans mon contexte
+                      </h3>
+                      <p className="text-gray-300 whitespace-pre-line leading-relaxed">
+                        {selectedLesson.application_pratique}
+                      </p>
+                    </div>
+
+                    {/* 4. Auto-évaluation et méta-cognition */}
+                    <div>
+                      <h3 className="text-xl font-bold text-white mb-4 pb-2 border-b-2 border-cyan-500">
+                        4. Auto-évaluation et méta-cognition
+                      </h3>
+                      
+                      <div className="grid md:grid-cols-3 gap-6">
+                        {/* Ce que je maîtrise bien */}
+                        <div className="bg-green-500/10 border border-green-500/20 rounded-xl p-6">
+                          <h4 className="font-bold text-green-400 mb-3">
+                            Ce que je maîtrise bien :
+                          </h4>
+                          <p className="text-gray-300 whitespace-pre-line">
+                            {selectedLesson.maitrise_bien}
+                          </p>
+                        </div>
+
+                        {/* Ce que je dois améliorer */}
+                        <div className="bg-orange-500/10 border border-orange-500/20 rounded-xl p-6">
+                          <h4 className="font-bold text-orange-400 mb-3">
+                            Ce que je dois améliorer :
+                          </h4>
+                          <p className="text-gray-300 whitespace-pre-line">
+                            {selectedLesson.a_ameliorer}
+                          </p>
+                        </div>
+
+                        {/* Stratégie pour progresser */}
+                        <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-6">
+                          <h4 className="font-bold text-blue-400 mb-3">
+                            Stratégie pour progresser :
+                          </h4>
+                          <p className="text-gray-300 whitespace-pre-line">
+                            {selectedLesson.strategie_progression}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+
+                {lessons.length === 0 && (
+                  <div className="text-center py-20">
+                    <FileText className="w-16 h-16 mx-auto mb-4 text-gray-500" />
+                    <p className="text-gray-400">Aucune leçon disponible pour le moment</p>
+                  </div>
+                )}
+              </motion.div>
+            ) : (
+              <motion.div
+                key="bilan"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="glass rounded-3xl p-8 border border-white/10"
+              >
+                <h2 className="text-3xl font-bold text-white mb-2">
+                  Bilan final (à remplir en fin de semestre)
+                </h2>
+                <p className="text-gray-400 mb-8">
+                  Réflexion globale sur l'ensemble du cours
+                </p>
+
+                {finalAssessment && (
+                  <div className="space-y-8">
+                    <div>
+                      <h3 className="text-xl font-bold text-cyan-400 mb-4">
+                        1. Ce que j'ai le plus appris dans ce cours :
+                      </h3>
+                      <div className="bg-white/5 rounded-xl p-6 border border-white/10">
+                        <p className="text-gray-300 whitespace-pre-line">
+                          {finalAssessment.appris_plus}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div>
+                      <h3 className="text-xl font-bold text-cyan-400 mb-4">
+                        2. Les compétences que je peux réutiliser ailleurs :
+                      </h3>
+                      <div className="bg-white/5 rounded-xl p-6 border border-white/10">
+                        <p className="text-gray-300 whitespace-pre-line">
+                          {finalAssessment.competences_reutilisables}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div>
+                      <h3 className="text-xl font-bold text-cyan-400 mb-4">
+                        3. Mon plus grand défi :
+                      </h3>
+                      <div className="bg-white/5 rounded-xl p-6 border border-white/10">
+                        <p className="text-gray-300 whitespace-pre-line">
+                          {finalAssessment.plus_grand_defi}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div>
+                      <h3 className="text-xl font-bold text-cyan-400 mb-4">
+                        4. Mes prochaines étapes d'apprentissage :
+                      </h3>
+                      <div className="bg-white/5 rounded-xl p-6 border border-white/10">
+                        <p className="text-gray-300 whitespace-pre-line">
+                          {finalAssessment.prochaines_etapes}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </div>
+    </>
+  )
+}
