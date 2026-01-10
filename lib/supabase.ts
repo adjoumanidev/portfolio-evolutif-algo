@@ -13,6 +13,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 export interface Lesson {
   id: string
   title: string
+  slug: string
   date: string
   week_number: number | null
   
@@ -55,6 +56,18 @@ export interface Profile {
   github_url: string
   linkedin_url: string
   photo_url: string
+  created_at: string
+  updated_at: string
+}
+
+
+export interface Contact {
+  id: string
+  name: string
+  email: string
+  subject: string
+  message: string
+  status: 'unread' | 'read' | 'replied'
   created_at: string
   updated_at: string
 }
@@ -214,4 +227,52 @@ export const fetchLessonsPaginated = async (page: number, pageSize: number = 10)
     totalPages: Math.ceil((count || 0) / pageSize),
     currentPage: page
   }
+}
+
+// Fonction pour récupérer par slug
+export const fetchLessonBySlug = async (slug: string) => {
+  const { data, error } = await supabase
+    .from('lessons')
+    .select('*')
+    .eq('slug', slug)
+    .single()
+  
+  if (error) throw error
+  return data as Lesson
+}
+
+// Fonction créer un contact
+export const createContact = async (contact: Omit<Contact, 'id' | 'status' | 'created_at' | 'updated_at'>) => {
+  const { data, error } = await supabase
+    .from('contacts')
+    .insert([contact])
+    .select()
+    .single()
+  
+  if (error) throw error
+  return data as Contact
+}
+
+// Fonction pour récupérer tous les contacts (admin)
+export const fetchContacts = async () => {
+  const { data, error } = await supabase
+    .from('contacts')
+    .select('*')
+    .order('created_at', { ascending: false })
+  
+  if (error) throw error
+  return data as Contact[]
+}
+
+// Fonction pour marquer un contact comme lu
+export const markContactAsRead = async (id: string) => {
+  const { data, error } = await supabase
+    .from('contacts')
+    .update({ status: 'read' })
+    .eq('id', id)
+    .select()
+    .single()
+  
+  if (error) throw error
+  return data as Contact
 }

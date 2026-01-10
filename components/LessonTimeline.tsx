@@ -132,7 +132,7 @@ export default function LessonTimeline({ lessons }: LessonTimelineProps) {
             >
               {/* Contenu de la leçon */}
               <div className="w-5/12">
-                <Link href={`/lessons/${lesson.id}`}>
+                <Link href={`/lessons/${lesson.slug}`}>
                   <motion.div
                     whileHover={{ scale: 1.05, rotateY: isLeft ? 5 : -5 }}
                     className="relative group cursor-pointer"

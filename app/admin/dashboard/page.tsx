@@ -33,8 +33,8 @@ import {
 import { LessonModalV3 } from '@/components/LessonModal'
 import { transformFormToSQL} from '@/lib/transformers'
 import type { LessonFormData } from '@/lib/transformers'
-
-
+import Footer from '@/components/Footer'
+import toast, { Toaster } from 'react-hot-toast'
 
 
 export default function AdminDashboardV3() {
@@ -395,6 +395,136 @@ function LessonsTab({
 }
 
 // Composant ProfileTab
+// function ProfileTab({
+//   profile,
+//   onPhotoUpload,
+//   uploadingPhoto,
+//   onUpdate,
+// }: {
+//   profile: Profile | null
+//   onPhotoUpload: (e: React.ChangeEvent<HTMLInputElement>) => void
+//   uploadingPhoto: boolean
+//   onUpdate: (data: Partial<Profile>) => void
+// }) {
+//   const [formData, setFormData] = useState<Partial<Profile>>(profile || {})
+
+//   useEffect(() => {
+//     if (profile) {
+//       setFormData(profile)
+//     }
+//   }, [profile])
+
+//   if (!profile) return null
+
+//   return (
+//     <div className="glass rounded-2xl p-8 border border-white/10">
+//       <h2 className="text-2xl font-bold text-white mb-6">Gestion du Profil</h2>
+
+//       {/* Photo de profil */}
+//       <div className="mb-8">
+//         <label className="block text-sm font-medium text-gray-300 mb-4">
+//           Photo de profil
+//         </label>
+//         <div className="flex items-center gap-6">
+//           <div className="relative">
+//             <img
+//               src={profile.photo_url || '/images/default-avatar.png'}
+//               alt={profile.name}
+//               className="w-24 h-24 rounded-full object-cover border-4 border-cyan-500/30"
+//             />
+//             {uploadingPhoto && (
+//               <div className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center">
+//                 <div className="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin" />
+//               </div>
+//             )}
+//           </div>
+//           <label className="cursor-pointer">
+//             <input
+//               type="file"
+//               accept="image/*"
+//               onChange={onPhotoUpload}
+//               className="hidden"
+//               disabled={uploadingPhoto}
+//             />
+//             <div className="flex items-center gap-2 px-6 py-3 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 rounded-xl transition-colors">
+//               <Upload className="w-5 h-5" />
+//               {uploadingPhoto ? 'Upload en cours...' : 'Changer la photo'}
+//             </div>
+//           </label>
+//         </div>
+//       </div>
+
+//       {/* Formulaire */}
+//       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+//         <div>
+//           <label className="block text-sm font-medium text-gray-300 mb-2">Nom</label>
+//           <input
+//             type="text"
+//             value={formData.name || ''}
+//             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+//             className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
+//           />
+//         </div>
+//         <div>
+//           <label className="block text-sm font-medium text-gray-300 mb-2">Titre</label>
+//           <input
+//             type="text"
+//             value={formData.title || ''}
+//             onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+//             className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
+//           />
+//         </div>
+//         <div className="md:col-span-2">
+//           <label className="block text-sm font-medium text-gray-300 mb-2">Bio</label>
+//           <textarea
+//             value={formData.bio || ''}
+//             onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
+//             rows={4}
+//             className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
+//           />
+//         </div>
+//         <div>
+//           <label className="block text-sm font-medium text-gray-300 mb-2">Email</label>
+//           <input
+//             type="email"
+//             value={formData.email || ''}
+//             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+//             className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
+//           />
+//         </div>
+//         <div>
+//           <label className="block text-sm font-medium text-gray-300 mb-2">GitHub</label>
+//           <input
+//             type="url"
+//             value={formData.github_url || ''}
+//             onChange={(e) => setFormData({ ...formData, github_url: e.target.value })}
+//             className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
+//           />
+//         </div>
+//         <div>
+//           <label className="block text-sm font-medium text-gray-300 mb-2">LinkedIn</label>
+//           <input
+//             type="url"
+//             value={formData.linkedin_url || ''}
+//             onChange={(e) => setFormData({ ...formData, linkedin_url: e.target.value })}
+//             className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
+//           />
+//         </div>
+//       </div>
+
+//       <button
+//         onClick={() => onUpdate(formData)}
+//         className="mt-8 flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-xl hover:shadow-lg hover:shadow-cyan-500/25 transition-all"
+//       >
+//         <Save className="w-5 h-5" />
+//         Enregistrer les modifications
+//       </button>
+//     </div>
+//   )
+// }
+
+
+// Modifie le composant ProfileTab
 function ProfileTab({
   profile,
   onPhotoUpload,
@@ -407,12 +537,26 @@ function ProfileTab({
   onUpdate: (data: Partial<Profile>) => void
 }) {
   const [formData, setFormData] = useState<Partial<Profile>>(profile || {})
+  const [saving, setSaving] = useState(false)
 
   useEffect(() => {
     if (profile) {
       setFormData(profile)
     }
   }, [profile])
+
+  const handleSave = async () => {
+    setSaving(true)
+    try {
+      await onUpdate(formData)
+      toast.success('Profil mis à jour avec succès ! 🎉')
+    } catch (error) {
+      console.error('Erreur mise à jour profil:', error)
+      toast.error('Erreur lors de la mise à jour du profil')
+    } finally {
+      setSaving(false)
+    }
+  }
 
   if (!profile) return null
 
@@ -513,17 +657,112 @@ function ProfileTab({
       </div>
 
       <button
-        onClick={() => onUpdate(formData)}
-        className="mt-8 flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-xl hover:shadow-lg hover:shadow-cyan-500/25 transition-all"
+        onClick={handleSave}
+        disabled={saving}
+        className="mt-8 flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-xl hover:shadow-lg hover:shadow-cyan-500/25 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        <Save className="w-5 h-5" />
-        Enregistrer les modifications
+        {saving ? (
+          <>
+            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+            Enregistrement...
+          </>
+        ) : (
+          <>
+            <Save className="w-5 h-5" />
+            Enregistrer les modifications
+          </>
+        )}
       </button>
     </div>
   )
 }
 
 // Composant BilanFinalTab
+// function BilanFinalTab({
+//   bilan,
+//   onUpdate,
+// }: {
+//   bilan: FinalAssessment | null
+//   onUpdate: (data: Partial<FinalAssessment>) => void
+// }) {
+//   const [formData, setFormData] = useState<Partial<FinalAssessment>>(bilan || {})
+
+//   useEffect(() => {
+//     if (bilan) {
+//       setFormData(bilan)
+//     }
+//   }, [bilan])
+
+//   if (!bilan) return null
+
+//   return (
+//     <div className="glass rounded-2xl p-8 border border-white/10">
+//       <h2 className="text-2xl font-bold text-white mb-2">Bilan Final de Semestre</h2>
+//       <p className="text-gray-400 mb-6">À remplir en fin de semestre</p>
+
+//       <div className="space-y-6">
+//         <div>
+//           <label className="block text-sm font-medium text-gray-300 mb-2">
+//             1. Ce que j'ai le plus appris dans ce cours
+//           </label>
+//           <textarea
+//             value={formData.appris_plus || ''}
+//             onChange={(e) => setFormData({ ...formData, appris_plus: e.target.value })}
+//             rows={4}
+//             className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
+//           />
+//         </div>
+
+//         <div>
+//           <label className="block text-sm font-medium text-gray-300 mb-2">
+//             2. Les compétences que je peux réutiliser ailleurs
+//           </label>
+//           <textarea
+//             value={formData.competences_reutilisables || ''}
+//             onChange={(e) => setFormData({ ...formData, competences_reutilisables: e.target.value })}
+//             rows={4}
+//             className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
+//           />
+//         </div>
+
+//         <div>
+//           <label className="block text-sm font-medium text-gray-300 mb-2">
+//             3. Mon plus grand défi
+//           </label>
+//           <textarea
+//             value={formData.plus_grand_defi || ''}
+//             onChange={(e) => setFormData({ ...formData, plus_grand_defi: e.target.value })}
+//             rows={4}
+//             className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
+//           />
+//         </div>
+
+//         <div>
+//           <label className="block text-sm font-medium text-gray-300 mb-2">
+//             4. Mes prochaines étapes d'apprentissage
+//           </label>
+//           <textarea
+//             value={formData.prochaines_etapes || ''}
+//             onChange={(e) => setFormData({ ...formData, prochaines_etapes: e.target.value })}
+//             rows={4}
+//             className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
+//           />
+//         </div>
+//       </div>
+
+//       <button
+//         onClick={() => onUpdate(formData)}
+//         className="mt-8 flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-xl hover:shadow-lg hover:shadow-cyan-500/25 transition-all"
+//       >
+//         <Save className="w-5 h-5" />
+//         Enregistrer le bilan
+//       </button>
+//       
+//     </div>
+//   )
+// }
+
+// Modifie le composant BilanFinalTab
 function BilanFinalTab({
   bilan,
   onUpdate,
@@ -532,6 +771,7 @@ function BilanFinalTab({
   onUpdate: (data: Partial<FinalAssessment>) => void
 }) {
   const [formData, setFormData] = useState<Partial<FinalAssessment>>(bilan || {})
+  const [saving, setSaving] = useState(false)
 
   useEffect(() => {
     if (bilan) {
@@ -539,70 +779,96 @@ function BilanFinalTab({
     }
   }, [bilan])
 
+  const handleSave = async () => {
+    setSaving(true)
+    try {
+      await onUpdate(formData)
+      toast.success('Bilan final mis à jour avec succès ! 🎉')
+    } catch (error) {
+      console.error('Erreur mise à jour bilan:', error)
+      toast.error('Erreur lors de la mise à jour du bilan')
+    } finally {
+      setSaving(false)
+    }
+  }
+
   if (!bilan) return null
 
   return (
-    <div className="glass rounded-2xl p-8 border border-white/10">
-      <h2 className="text-2xl font-bold text-white mb-2">Bilan Final de Semestre</h2>
-      <p className="text-gray-400 mb-6">À remplir en fin de semestre</p>
+    <>
+      <div className="glass rounded-2xl p-8 border border-white/10">
+        <h2 className="text-2xl font-bold text-white mb-2">Bilan Final de Semestre</h2>
+        <p className="text-gray-400 mb-6">À remplir en fin de semestre</p>
 
-      <div className="space-y-6">
-        <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">
-            1. Ce que j'ai le plus appris dans ce cours
-          </label>
-          <textarea
-            value={formData.appris_plus || ''}
-            onChange={(e) => setFormData({ ...formData, appris_plus: e.target.value })}
-            rows={4}
-            className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
-          />
+        <div className="space-y-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              1. Ce que j'ai le plus appris dans ce cours
+            </label>
+            <textarea
+              value={formData.appris_plus || ''}
+              onChange={(e) => setFormData({ ...formData, appris_plus: e.target.value })}
+              rows={4}
+              className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              2. Les compétences que je peux réutiliser ailleurs
+            </label>
+            <textarea
+              value={formData.competences_reutilisables || ''}
+              onChange={(e) => setFormData({ ...formData, competences_reutilisables: e.target.value })}
+              rows={4}
+              className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              3. Mon plus grand défi
+            </label>
+            <textarea
+              value={formData.plus_grand_defi || ''}
+              onChange={(e) => setFormData({ ...formData, plus_grand_defi: e.target.value })}
+              rows={4}
+              className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              4. Mes prochaines étapes d'apprentissage
+            </label>
+            <textarea
+              value={formData.prochaines_etapes || ''}
+              onChange={(e) => setFormData({ ...formData, prochaines_etapes: e.target.value })}
+              rows={4}
+              className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
+            />
+          </div>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">
-            2. Les compétences que je peux réutiliser ailleurs
-          </label>
-          <textarea
-            value={formData.competences_reutilisables || ''}
-            onChange={(e) => setFormData({ ...formData, competences_reutilisables: e.target.value })}
-            rows={4}
-            className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">
-            3. Mon plus grand défi
-          </label>
-          <textarea
-            value={formData.plus_grand_defi || ''}
-            onChange={(e) => setFormData({ ...formData, plus_grand_defi: e.target.value })}
-            rows={4}
-            className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">
-            4. Mes prochaines étapes d'apprentissage
-          </label>
-          <textarea
-            value={formData.prochaines_etapes || ''}
-            onChange={(e) => setFormData({ ...formData, prochaines_etapes: e.target.value })}
-            rows={4}
-            className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
-          />
-        </div>
+        <button
+          onClick={handleSave}
+          disabled={saving}
+          className="mt-8 flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-xl hover:shadow-lg hover:shadow-cyan-500/25 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {saving ? (
+            <>
+              <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              Enregistrement...
+            </>
+          ) : (
+            <>
+              <Save className="w-5 h-5" />
+              Enregistrer le bilan
+            </>
+          )}
+        </button>
       </div>
-
-      <button
-        onClick={() => onUpdate(formData)}
-        className="mt-8 flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-xl hover:shadow-lg hover:shadow-cyan-500/25 transition-all"
-      >
-        <Save className="w-5 h-5" />
-        Enregistrer le bilan
-      </button>
-    </div>
+      <Footer />
+    </>
   )
 }

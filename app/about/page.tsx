@@ -23,6 +23,9 @@ import { fetchProfile, type Profile } from '@/lib/supabase'
 import ModernBackground from '@/components/ModernBackground'
 import CustomCursor from '@/components/CustomCursor'
 import ProfilePhoto from '@/components/ProfilePhoto'
+import Footer from '@/components/Footer'
+
+
 
 export default function AboutPage() {
   const [profile, setProfile] = useState<Profile | null>(null)
@@ -313,7 +316,7 @@ export default function AboutPage() {
                     Me contacter
                   </Link>
                   <Link
-                    href="/lessons-v3"
+                    href="/lessons"
                     className="px-8 py-4 bg-white/5 hover:bg-white/10 border border-white/10 text-white rounded-xl font-semibold transition-all hover:scale-105"
                   >
                     Voir mes leçons
@@ -324,6 +327,7 @@ export default function AboutPage() {
           </div>
         </div>
       </div>
+      <Footer />
     </>
   )
 }

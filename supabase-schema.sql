@@ -97,6 +97,49 @@ CREATE POLICY "Enable insert for all users" ON profile
 CREATE POLICY "Enable update for all users" ON profile
   FOR UPDATE USING (id = 1);
 
+
+
+
+-- Créer la table des messages de contact
+CREATE TABLE IF NOT EXISTS contacts (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name TEXT NOT NULL,
+  email TEXT NOT NULL,
+  subject TEXT NOT NULL,
+  message TEXT NOT NULL,
+  status TEXT DEFAULT 'unread' CHECK (status IN ('unread', 'read', 'replied')),
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Index pour améliorer les performances
+CREATE INDEX idx_contacts_email ON contacts(email);
+CREATE INDEX idx_contacts_status ON contacts(status);
+CREATE INDEX idx_contacts_created_at ON contacts(created_at DESC);
+
+-- Trigger pour updated_at
+CREATE TRIGGER update_contacts_updated_at
+  BEFORE UPDATE ON contacts
+  FOR EACH ROW
+  EXECUTE FUNCTION update_updated_at_column();
+
+-- Enable Row Level Security
+ALTER TABLE contacts ENABLE ROW LEVEL SECURITY;
+
+-- Policy : Tout le monde peut insérer (envoyer un message)
+CREATE POLICY "Enable insert for all users" ON contacts
+  FOR INSERT WITH CHECK (true);
+
+-- Policy : Seuls les utilisateurs authentifiés peuvent lire (admin)
+CREATE POLICY "Enable read for authenticated users" ON contacts
+  FOR SELECT TO authenticated USING (true);
+
+-- Policy : Seuls les utilisateurs authentifiés peuvent mettre à jour
+CREATE POLICY "Enable update for authenticated users" ON contacts
+  FOR UPDATE TO authenticated USING (true);
+
+
+
 -- 8. Insertion des données initiales du profil
 INSERT INTO profile (
   id,
@@ -179,3 +222,87 @@ CREATE INDEX IF NOT EXISTS idx_lessons_created_at ON lessons(created_at);
 
 -- Fin du script
 -- Votre base de données est maintenant prête ! 🎉
+
+
+
+
+-- Ajouter la colonne slug
+ALTER TABLE lessons 
+ADD COLUMN slug TEXT UNIQUE;
+
+-- Créer un index pour les performances
+CREATE INDEX idx_lessons_slug ON lessons(slug);
+
+-- Fonction pour générer automatiquement le slug à partir du titre
+CREATE OR REPLACE FUNCTION generate_slug(title TEXT) 
+RETURNS TEXT AS $$
+DECLARE
+  slug TEXT;
+BEGIN
+  -- Convertir en minuscules
+  slug := LOWER(title);
+  
+  -- Remplacer les accents
+  slug := TRANSLATE(slug, 
+    'àáâãäåāăąèéêëēĕėęěìíîïĩīĭįòóôõöøōŏőùúûüũūŭůçćĉċčñńņňÿýŷ',
+    'aaaaaaaaaeeeeeeeeeiiiiiiiiooooooooouuuuuuuucccccnnnnyyyy'
+  );
+  
+  -- Remplacer les espaces et caractères spéciaux par des tirets
+  slug := REGEXP_REPLACE(slug, '[^a-z0-9]+', '-', 'g');
+  
+  -- Supprimer les tirets en début et fin
+  slug := TRIM(BOTH '-' FROM slug);
+  
+  RETURN slug;
+END;
+$$ LANGUAGE plpgsql IMMUTABLE;
+
+-- Générer les slugs pour les leçons existantes
+UPDATE lessons 
+SET slug = generate_slug(title)
+WHERE slug IS NULL;
+
+-- Trigger pour générer automatiquement le slug lors de l'insertion/mise à jour
+CREATE OR REPLACE FUNCTION set_lesson_slug()
+RETURNS TRIGGER AS $$
+BEGIN
+  -- Si le slug est vide ou si le titre a changé, régénérer le slug
+  IF NEW.slug IS NULL OR (TG_OP = 'UPDATE' AND NEW.title != OLD.title) THEN
+    NEW.slug := generate_slug(NEW.title);
+    
+    -- Gérer les doublons en ajoutant un suffixe numérique
+    WHILE EXISTS (SELECT 1 FROM lessons WHERE slug = NEW.slug AND id != NEW.id) LOOP
+      NEW.slug := generate_slug(NEW.title) || '-' || SUBSTRING(NEW.id::TEXT FROM 1 FOR 8);
+    END LOOP;
+  END IF;
+  
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS trigger_set_lesson_slug ON lessons;
+CREATE TRIGGER trigger_set_lesson_slug
+  BEFORE INSERT OR UPDATE ON lessons
+  FOR EACH ROW
+  EXECUTE FUNCTION set_lesson_slug();
+
+
+
+--- Car la securité empechait l'envoi de message
+-- 1. Supprimer TOUTES les policies existantes
+DROP POLICY IF EXISTS "Enable insert for all users" ON contacts;
+DROP POLICY IF EXISTS "Enable insert for anonymous users" ON contacts;
+DROP POLICY IF EXISTS "Allow public insert" ON contacts;
+DROP POLICY IF EXISTS "Enable insert for everyone" ON contacts;
+DROP POLICY IF EXISTS "Enable read for authenticated" ON contacts;
+DROP POLICY IF EXISTS "Enable update for authenticated" ON contacts;
+DROP POLICY IF EXISTS "contacts_insert_policy" ON contacts;
+DROP POLICY IF EXISTS "contacts_select_policy" ON contacts;
+DROP POLICY IF EXISTS "contacts_update_policy" ON contacts;
+
+-- 2. DÉSACTIVER complètement RLS
+ALTER TABLE contacts DISABLE ROW LEVEL SECURITY;
+
+-- 3. Vérifier
+SELECT tablename, rowsecurity FROM pg_tables WHERE tablename = 'contacts';

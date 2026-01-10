@@ -18,6 +18,12 @@ import {
 } from 'lucide-react'
 import ModernBackground from '@/components/ModernBackground'
 import CustomCursor from '@/components/CustomCursor'
+import { createContact } from '@/lib/supabase'
+import toast, { Toaster } from 'react-hot-toast'
+import Footer from '@/components/Footer'
+
+
+
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -33,17 +39,24 @@ export default function ContactPage() {
     e.preventDefault()
     setSending(true)
 
-    // Simulation d'envoi (remplacer par vraie API)
-    await new Promise((resolve) => setTimeout(resolve, 2000))
+    try {
+      // ✅ Envoyer à Supabase
+      await createContact(formData)
+      
+      setSent(true)
+      toast.success('Message envoyé avec succès ! 🎉')
 
-    setSending(false)
-    setSent(true)
-
-    // Reset après 3 secondes
-    setTimeout(() => {
-      setSent(false)
-      setFormData({ name: '', email: '', subject: '', message: '' })
-    }, 3000)
+      // Reset après 3 secondes
+      setTimeout(() => {
+        setSent(false)
+        setFormData({ name: '', email: '', subject: '', message: '' })
+      }, 3000)
+    } catch (error) {
+      console.error('Erreur envoi:', error)
+      toast.error('Erreur lors de l\'envoi du message. Réessayez.')
+    } finally {
+      setSending(false)
+    }
   }
 
   const contactInfo = [
@@ -57,8 +70,8 @@ export default function ContactPage() {
     {
       icon: Phone,
       label: 'Téléphone',
-      value: '+225 O7 78 28 88 68',
-      href: 'tel:+225O778288868',
+      value: '+225 07 78 28 88 68',
+      href: 'tel:+225077828868',
       color: 'from-green-500 to-emerald-600',
     },
     {
@@ -74,19 +87,20 @@ export default function ContactPage() {
     {
       icon: Github,
       label: 'GitHub',
-      href: 'https://github.com/adjoumani',
+      href: 'https://github.com/Adjoum',
       color: 'hover:text-gray-400',
     },
     {
       icon: Linkedin,
       label: 'LinkedIn',
-      href: 'https://linkedin.com/in/adjoumani',
+      href: 'https://www.linkedin.com/in/koffi-wilfried-adjoumani/',
       color: 'hover:text-blue-400',
     },
   ]
 
   return (
     <>
+      <Toaster position="top-right" />
       <CustomCursor />
       <ModernBackground />
 
@@ -326,18 +340,19 @@ export default function ContactPage() {
                   Je suis disponible pour un appel ou une visioconférence pour discuter de vos projets.
                 </p>
                 <a
-                  href="https://calendly.com/adjoumani"
+                  href="https://wa.me/225077828868"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-block px-8 py-4 bg-white/5 hover:bg-white/10 border border-white/10 text-white rounded-xl font-semibold transition-all hover:scale-105"
                 >
-                  Réserver un créneau 📅
+                  Discuter sur WhatsApp 💬
                 </a>
               </div>
             </motion.div>
           </div>
         </div>
       </div>
+      <Footer />
     </>
   )
 }

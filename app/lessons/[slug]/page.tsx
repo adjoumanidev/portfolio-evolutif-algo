@@ -1,45 +1,70 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useParams, useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Calendar, Edit3, FileText, Home } from 'lucide-react'
+import { Calendar, Edit3, FileText, Home, ArrowLeft, Share2 } from 'lucide-react'
 import Link from 'next/link'
-import { fetchLessons, fetchProfile, fetchFinalAssessment, type Lesson, type Profile, type FinalAssessment } from '@/lib/supabase'
+import { fetchLessons, fetchLessonBySlug, fetchProfile, fetchFinalAssessment, type Lesson, type Profile, type FinalAssessment } from '@/lib/supabase'
 import ModernBackground from '@/components/ModernBackground'
 import CustomCursor from '@/components/CustomCursor'
 import ProfilePhoto from '@/components/ProfilePhoto'
+import toast, { Toaster } from 'react-hot-toast'
+import Footer from '@/components/Footer'
 
-export default function LessonsPageV3() {
+
+
+
+
+
+export default function LessonDetailPage() {
+  const params = useParams()
+  const router = useRouter()
   const [lessons, setLessons] = useState<Lesson[]>([])
+  const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null)
   const [profile, setProfile] = useState<Profile | null>(null)
   const [finalAssessment, setFinalAssessment] = useState<FinalAssessment | null>(null)
-  const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null)
   const [loading, setLoading] = useState(true)
   const [showBilan, setShowBilan] = useState(false)
 
   useEffect(() => {
     loadData()
-  }, [])
+  }, [params.slug])
 
   const loadData = async () => {
     try {
-      const [lessonsData, profileData, bilanData] = await Promise.all([
+      const slug = params.slug as string
+      const [lessonsData, lessonData, profileData, bilanData] = await Promise.all([
         fetchLessons(),
+        fetchLessonBySlug(slug),
         fetchProfile(),
         fetchFinalAssessment(),
       ])
+      
       setLessons(lessonsData)
+      setSelectedLesson(lessonData)
       setProfile(profileData)
       setFinalAssessment(bilanData)
-      
-      // Sélectionner la première leçon par défaut
-      if (lessonsData.length > 0) {
-        setSelectedLesson(lessonsData[0])
-      }
     } catch (error) {
       console.error('Erreur chargement:', error)
+      toast.error('Leçon introuvable')
+      // Si la leçon n'existe pas, rediriger vers la première leçon
+      const lessonsData = await fetchLessons()
+      if (lessonsData.length > 0) {
+        router.push(`/lessons/${lessonsData[0].slug}`)
+      }
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleShare = async () => {
+    const url = window.location.href
+    try {
+      await navigator.clipboard.writeText(url)
+      toast.success('Lien copié dans le presse-papier !')
+    } catch (error) {
+      toast.error('Erreur lors de la copie du lien')
     }
   }
 
@@ -53,6 +78,7 @@ export default function LessonsPageV3() {
 
   return (
     <>
+      <Toaster position="top-right" />
       <CustomCursor />
       <ModernBackground />
       
@@ -67,7 +93,7 @@ export default function LessonsPageV3() {
                     photoUrl={profile.photo_url}
                     name={profile.name}
                     size="small"
-                    />
+                  />
                 )}
                 <div>
                   <h1 className="text-2xl font-bold">AlgoMaster Portfolio</h1>
@@ -121,13 +147,13 @@ export default function LessonsPageV3() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
               >
-                {/* Onglets des titres de leçons */}
+                {/* ✅ Onglets des titres de leçons AVEC LIENS DYNAMIQUES */}
                 <div className="mb-6 overflow-x-auto">
                   <div className="flex gap-2 min-w-max pb-2">
                     {lessons.map((lesson) => (
-                      <button
+                      <Link
                         key={lesson.id}
-                        onClick={() => setSelectedLesson(lesson)}
+                        href={`/lessons/${lesson.slug}`}  
                         className={`px-6 py-3 rounded-xl font-medium transition-all whitespace-nowrap ${
                           selectedLesson?.id === lesson.id
                             ? 'bg-gradient-to-r from-cyan-600 to-blue-700 text-white shadow-lg'
@@ -135,7 +161,7 @@ export default function LessonsPageV3() {
                         }`}
                       >
                         {lesson.title}
-                      </button>
+                      </Link>
                     ))}
                   </div>
                 </div>
@@ -151,30 +177,44 @@ export default function LessonsPageV3() {
                   >
                     {/* Header de la leçon */}
                     <div className="mb-8 pb-6 border-b border-white/10">
-                      <div className="flex items-center justify-between mb-4">
-                        <h2 className="text-3xl font-bold text-cyan-400">
-                          {selectedLesson.title}
-                        </h2>
-                        <Link
-                          href={`/admin/dashboard-v3`}
-                          className="flex items-center gap-2 px-4 py-2 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 rounded-xl transition-colors"
-                        >
-                          <Edit3 className="w-4 h-4" />
-                          Modifier
-                        </Link>
-                      </div>
-                      <div className="flex items-center gap-4 text-sm text-gray-400">
-                        <span className="flex items-center gap-1">
-                          <Calendar className="w-4 h-4" />
-                          {new Date(selectedLesson.date).toLocaleDateString('fr-FR', {
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric',
-                          })}
-                        </span>
-                        {selectedLesson.week_number && (
-                          <span>Semaine {selectedLesson.week_number}</span>
-                        )}
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex-1">
+                          <h2 className="text-3xl font-bold text-cyan-400 mb-4">
+                            {selectedLesson.title}
+                          </h2>
+                          <div className="flex items-center gap-4 text-sm text-gray-400 flex-wrap">
+                            <span className="flex items-center gap-1">
+                              <Calendar className="w-4 h-4" />
+                              {new Date(selectedLesson.date).toLocaleDateString('fr-FR', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric',
+                              })}
+                            </span>
+                            {selectedLesson.week_number && (
+                              <span className="px-3 py-1 bg-cyan-500/20 text-cyan-400 rounded-full">
+                                Semaine {selectedLesson.week_number}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        
+                        <div className="flex gap-2">
+                          <button
+                            onClick={handleShare}
+                            className="flex items-center gap-2 px-4 py-2 bg-purple-500/10 hover:bg-purple-500/20 text-purple-400 rounded-xl transition-colors"
+                          >
+                            <Share2 className="w-4 h-4" />
+                            <span className="hidden md:inline">Partager</span>
+                          </button>
+                          <Link
+                            href="/admin/dashboard-v3"
+                            className="flex items-center gap-2 px-4 py-2 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 rounded-xl transition-colors"
+                          >
+                            <Edit3 className="w-4 h-4" />
+                            <span className="hidden md:inline">Modifier</span>
+                          </Link>
+                        </div>
                       </div>
                     </div>
 
@@ -323,6 +363,7 @@ export default function LessonsPageV3() {
           </AnimatePresence>
         </div>
       </div>
+      <Footer/>
     </>
   )
 }
