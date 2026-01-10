@@ -1,22 +1,28 @@
 -- Script SQL à exécuter dans Supabase SQL Editor
 -- Ce script crée toutes les tables nécessaires pour votre portfolio
-
+-- 1. Supprimer l'ancienne table si elle existe
+DROP TABLE IF EXISTS lessons CASCADE;
+-- 1. Supprimer l'ancienne table si elle existe
+DROP TABLE IF EXISTS profile CASCADE;
 -- 1. Table des leçons
 CREATE TABLE IF NOT EXISTS lessons (
   id BIGSERIAL PRIMARY KEY,
+  -- Métadonnées
   title TEXT NOT NULL,
-  subtitle TEXT,
-  complexity TEXT NOT NULL,
-  icon_name TEXT NOT NULL DEFAULT 'BookOpen',
-  color TEXT NOT NULL DEFAULT 'from-blue-500 to-cyan-500',
-  status TEXT NOT NULL DEFAULT 'upcoming' CHECK (status IN ('completed', 'in-progress', 'upcoming')),
-  date TEXT,
-  week_number INTEGER NOT NULL,
-  journal TEXT,
-  synthesis JSONB DEFAULT '{}',
-  practical_application JSONB DEFAULT '{}',
-  evaluation JSONB DEFAULT '{}',
-  mastery_level INTEGER DEFAULT 0 CHECK (mastery_level >= 0 AND mastery_level <= 10),
+  date DATE NOT NULL DEFAULT CURRENT_DATE,
+  week_number INTEGER,
+  
+  -- Les 4 sections principales
+  journal_reflexif TEXT NOT NULL DEFAULT '',
+  synthese_personnelle TEXT NOT NULL DEFAULT '',
+  application_pratique TEXT NOT NULL DEFAULT '',
+  
+  -- Auto-évaluation
+  maitrise_bien TEXT NOT NULL DEFAULT '',
+  a_ameliorer TEXT NOT NULL DEFAULT '',
+  strategie_progression TEXT NOT NULL DEFAULT '',
+  
+  -- Timestamps
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -125,32 +131,45 @@ INSERT INTO profile (
 -- 9. Insertion d'une leçon exemple
 INSERT INTO lessons (
   title,
-  subtitle,
-  complexity,
-  icon_name,
-  color,
-  status,
   date,
   week_number,
-  journal,
-  synthesis,
-  practical_application,
-  evaluation,
-  mastery_level
+  journal_reflexif,
+  synthese_personnelle,
+  application_pratique,
+  maitrise_bien,
+  a_ameliorer,
+  strategie_progression
 ) VALUES (
   'Introduction à la Complexité Algorithmique',
-  'Comprendre Big O, Omega et Theta',
-  'O(1) à O(2^n)',
-  'Brain',
-  'from-blue-500 to-cyan-500',
-  'completed',
-  'Semaine 1 - Janvier 2025',
+  '2025-01-15',
   1,
-  'Cette semaine, j''ai découvert le concept fondamental de la complexité algorithmique et la notation Big O. Au début, j''ai eu du mal à comprendre pourquoi on ignore les constantes dans l''analyse asymptotique.',
-  '{"mainConcepts": [{"title": "La Complexité Algorithmique", "description": "Mesure l''efficacité d''un algorithme", "examples": ["O(1): Constant", "O(log n): Logarithmique", "O(n): Linéaire"]}]}',
-  '{"context": "Système de recherche d''étudiants", "problem": "Recherche trop lente", "solution": "Recherche dichotomique", "result": "Temps réduit de 2s à 0.01s", "code": "def recherche_dichotomique(arr, x):\n    l, r = 0, len(arr)-1\n    while l <= r:\n        m = (l+r)//2\n        if arr[m] == x: return m\n        elif arr[m] < x: l = m+1\n        else: r = m-1\n    return -1"}',
-  '{"strengths": ["Identifier complexité simples", "Comprendre O(n) vs O(n²)"], "improvements": ["Analyser récursivité", "Preuves mathématiques"], "strategies": ["Résoudre 2 problèmes/jour", "Utiliser VisuAlgo"]}',
-  7
+  'Cette semaine, j''ai découvert le concept fondamental de la complexité algorithmique et la notation Big O. Au début, j''ai eu du mal à comprendre pourquoi on ignore les constantes dans l''analyse asymptotique. Après plusieurs exercices pratiques, j''ai réalisé que l''important est de comprendre comment le temps d''exécution croît avec la taille des données. J''ai particulièrement apprécié l''analogie avec la vie réelle : chercher un mot dans un dictionnaire (recherche dichotomique) vs chercher un livre dans une bibliothèque non triée (recherche linéaire).',
+  
+  'La complexité algorithmique mesure l''efficacité d''un algorithme en termes de temps et d''espace. La notation Big O (O) décrit le pire cas, Omega (Ω) le meilleur cas, et Theta (Θ) le cas moyen. Les complexités courantes sont :
+  - O(1) : Constant - accès direct à un élément
+  - O(log n) : Logarithmique - recherche dichotomique
+  - O(n) : Linéaire - parcourir tous les éléments
+  - O(n²) : Quadratique - boucles imbriquées
+  - O(2^n) : Exponentielle - problèmes combinatoires',
+  
+  'J''ai appliqué ces concepts au système de recherche d''étudiants de mon projet GESTIO-MARKET PRO. Initialement, j''utilisais une recherche linéaire qui prenait environ 2 secondes pour 10 000 étudiants. En implémentant une recherche dichotomique sur une liste triée, j''ai réduit le temps à 0.01 seconde.
+  Résultat : amélioration de 200x en performance !',
+  
+  '- Identifier les complexités simples (O(1), O(n), O(n²))
+  - Comprendre la différence entre O(n) et O(n²) sur des exemples concrets
+  - Savoir quand utiliser une recherche dichotomique vs linéaire
+  - Analyser les boucles imbriquées pour détecter O(n²)',
+    
+    '- Analyser les algorithmes récursifs (difficile de visualiser les appels)
+  - Comprendre les preuves mathématiques formelles
+  - Calculer la complexité spatiale (je me concentre trop sur le temps)
+  - Identifier les optimisations possibles dans du code existant',
+    
+    '- Résoudre 2 problèmes algorithmiques par jour sur LeetCode
+  - Utiliser VisuAlgo.net pour visualiser les algorithmes
+  - Créer un cheat sheet personnel des complexités courantes
+  - Réviser les preuves mathématiques 15 min par jour
+  - Pratiquer l''analyse de code réel de mes projets'
 ) ON CONFLICT DO NOTHING;
 
 -- 10. Créer des index pour améliorer les performances

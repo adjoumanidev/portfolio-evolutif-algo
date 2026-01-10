@@ -4,6 +4,9 @@ import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { X, Save, Calendar, Hash } from 'lucide-react'
 import type { Lesson } from '@/lib/supabase'
+import type { LessonFormData } from '@/lib/transformers'
+
+
 
 export function LessonModalV3({
   lesson,
@@ -12,10 +15,10 @@ export function LessonModalV3({
 }: {
   lesson: Lesson | null
   onClose: () => void
-  onSave: (data: Partial<Lesson>) => Promise<void>
+  onSave: (data: LessonFormData) => Promise<void>
 }) {
   const [loading, setLoading] = useState(false)
-  const [formData, setFormData] = useState<Partial<Lesson>>({
+  const [formData, setFormData] = useState<LessonFormData>({
     title: '',
     date: new Date().toISOString().split('T')[0],
     week_number: 1,

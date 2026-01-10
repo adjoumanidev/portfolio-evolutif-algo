@@ -31,6 +31,11 @@ import {
   type FinalAssessment,
 } from '@/lib/supabase'
 import { LessonModalV3 } from '@/components/LessonModal'
+import { transformFormToSQL} from '@/lib/transformers'
+import type { LessonFormData } from '@/lib/transformers'
+
+
+
 
 export default function AdminDashboardV3() {
   const router = useRouter()
@@ -251,19 +256,23 @@ export default function AdminDashboardV3() {
           <LessonModalV3
             lesson={editingLesson}
             onClose={() => setShowLessonModal(false)}
-            onSave={async (lessonData) => {
+            onSave={async (formData: LessonFormData) => {
               try {
+                const sqlData = transformFormToSQL(formData)
+                console.log('📤 Données à envoyer:', sqlData)
+                
                 if (editingLesson) {
-                  const updated = await updateLesson(editingLesson.id, lessonData)
+                  const updated = await updateLesson(editingLesson.id, sqlData)
                   setLessons(lessons.map((l) => (l.id === updated.id ? updated : l)))
                 } else {
-                  const created = await createLesson(lessonData)
+                  const created = await createLesson(sqlData)
                   setLessons([...lessons, created])
                 }
+                
                 setShowLessonModal(false)
                 await loadData()
               } catch (error) {
-                console.error('Erreur sauvegarde:', error)
+                console.error('❌ Erreur sauvegarde:', error)
                 alert('Erreur lors de la sauvegarde')
               }
             }}

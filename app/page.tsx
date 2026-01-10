@@ -87,15 +87,15 @@ export default function Home() {
             </motion.div>
 
             <div className="flex items-center space-x-6">
-              <Link href="about" className="hover:text-cyan-400 transition-colors relative group">
+              <Link href="/about" className="hover:text-cyan-400 transition-colors relative group">
                 À propos
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-cyan-400 transition-all group-hover:w-full" />
               </Link>
-              <Link href="#lessons" className="hover:text-cyan-400 transition-colors relative group">
+              <Link href="/lessons" className="hover:text-cyan-400 transition-colors relative group">
                 Leçons
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-cyan-400 transition-all group-hover:w-full" />
               </Link>
-              <Link href="contact" className="hover:text-cyan-400 transition-colors relative group">
+              <Link href="/contact" className="hover:text-cyan-400 transition-colors relative group">
                 Contact
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-cyan-400 transition-all group-hover:w-full" />
               </Link>
@@ -224,7 +224,7 @@ export default function Home() {
                   className="flex flex-wrap gap-4 mb-8"
                 >
                   <Link
-                    href="#lessons"
+                    href="/lessons"
                     className="group px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full font-semibold hover:shadow-lg hover:shadow-cyan-500/50 transition-all duration-300 flex items-center space-x-2"
                   >
                     <span>Explorer les Leçons</span>
