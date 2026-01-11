@@ -371,18 +371,6 @@ npm run dev
 - [Documentation Framer Motion](https://www.framer.com/motion/)
 - [Tutoriel Supabase + Next.js](https://supabase.com/docs/guides/getting-started/tutorials/with-nextjs)
 
-## 🎉 Félicitations !
-
-Vous avez maintenant un portfolio professionnel avec :
-- ✅ Effets visuels impressionnants
-- ✅ Base de données cloud
-- ✅ Données persistantes et accessibles
-- ✅ Site déployé et partageable
-- ✅ Expérience professionnelle valorisable sur CV
-
-**Temps d'investissement** : ~6 heures sur le semestre
-**Valeur ajoutée** : IMMENSE ! 🚀
-
 ---
 
 **Fait avec ❤️ pour les étudiants du Master Big Data Analytics UVCI**  

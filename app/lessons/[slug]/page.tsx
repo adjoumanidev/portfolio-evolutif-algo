@@ -11,7 +11,7 @@ import CustomCursor from '@/components/CustomCursor'
 import ProfilePhoto from '@/components/ProfilePhoto'
 import toast, { Toaster } from 'react-hot-toast'
 import Footer from '@/components/Footer'
-
+import MarkdownRenderer from '@/components/CodeSnapideMarkdown'
 
 
 
@@ -223,9 +223,10 @@ export default function LessonDetailPage() {
                       <h3 className="text-xl font-bold text-white mb-4 pb-2 border-b-2 border-cyan-500">
                         1. Journal d'apprentissage réflexif
                       </h3>
-                      <p className="text-gray-300 whitespace-pre-line leading-relaxed">
+                      {/*<p className="text-gray-300 whitespace-pre-line leading-relaxed">
                         {selectedLesson.journal_reflexif}
-                      </p>
+                      </p> */}
+                      <MarkdownRenderer content={selectedLesson.journal_reflexif} />
                     </div>
 
                     {/* 2. Synthèse personnelle des concepts clés */}
@@ -233,9 +234,10 @@ export default function LessonDetailPage() {
                       <h3 className="text-xl font-bold text-white mb-4 pb-2 border-b-2 border-cyan-500">
                         2. Synthèse personnelle des concepts clés
                       </h3>
-                      <p className="text-gray-300 whitespace-pre-line leading-relaxed">
+                      {/*<p className="text-gray-300 whitespace-pre-line leading-relaxed">
                         {selectedLesson.synthese_personnelle}
-                      </p>
+                      </p> */}
+                      <MarkdownRenderer content={selectedLesson.synthese_personnelle} />
                     </div>
 
                     {/* 3. Application pratique dans mon contexte */}
@@ -243,9 +245,10 @@ export default function LessonDetailPage() {
                       <h3 className="text-xl font-bold text-white mb-4 pb-2 border-b-2 border-cyan-500">
                         3. Application pratique dans mon contexte
                       </h3>
-                      <p className="text-gray-300 whitespace-pre-line leading-relaxed">
+                      {/*<p className="text-gray-300 whitespace-pre-line leading-relaxed">
                         {selectedLesson.application_pratique}
-                      </p>
+                      </p> */}
+                      <MarkdownRenderer content={selectedLesson.application_pratique} />
                     </div>
 
                     {/* 4. Auto-évaluation et méta-cognition */}
@@ -260,9 +263,11 @@ export default function LessonDetailPage() {
                           <h4 className="font-bold text-green-400 mb-3">
                             Ce que je maîtrise bien :
                           </h4>
-                          <p className="text-gray-300 whitespace-pre-line">
+                          {/*<p className="text-gray-300 whitespace-pre-line">
                             {selectedLesson.maitrise_bien}
-                          </p>
+                          </p>  */}
+                          <MarkdownRenderer content={selectedLesson.maitrise_bien} />
+                          
                         </div>
 
                         {/* Ce que je dois améliorer */}
@@ -270,9 +275,10 @@ export default function LessonDetailPage() {
                           <h4 className="font-bold text-orange-400 mb-3">
                             Ce que je dois améliorer :
                           </h4>
-                          <p className="text-gray-300 whitespace-pre-line">
+                          {/*<p className="text-gray-300 whitespace-pre-line">
                             {selectedLesson.a_ameliorer}
-                          </p>
+                          </p> */}
+                          <MarkdownRenderer content={selectedLesson.a_ameliorer} />
                         </div>
 
                         {/* Stratégie pour progresser */}
@@ -280,9 +286,10 @@ export default function LessonDetailPage() {
                           <h4 className="font-bold text-blue-400 mb-3">
                             Stratégie pour progresser :
                           </h4>
-                          <p className="text-gray-300 whitespace-pre-line">
+                          {/*<p className="text-gray-300 whitespace-pre-line">
                             {selectedLesson.strategie_progression}
-                          </p>
+                          </p> */}
+                          <MarkdownRenderer content={selectedLesson.strategie_progression} />
                         </div>
                       </div>
                     </div>
@@ -318,9 +325,10 @@ export default function LessonDetailPage() {
                         1. Ce que j'ai le plus appris dans ce cours :
                       </h3>
                       <div className="bg-white/5 rounded-xl p-6 border border-white/10">
-                        <p className="text-gray-300 whitespace-pre-line">
+                        {/*<p className="text-gray-300 whitespace-pre-line">
                           {finalAssessment.appris_plus}
-                        </p>
+                        </p>*/}
+                        <MarkdownRenderer content={finalAssessment.appris_plus} />
                       </div>
                     </div>
 
@@ -329,9 +337,10 @@ export default function LessonDetailPage() {
                         2. Les compétences que je peux réutiliser ailleurs :
                       </h3>
                       <div className="bg-white/5 rounded-xl p-6 border border-white/10">
-                        <p className="text-gray-300 whitespace-pre-line">
+                        {/*<p className="text-gray-300 whitespace-pre-line">
                           {finalAssessment.competences_reutilisables}
-                        </p>
+                        </p>*/}
+                        <MarkdownRenderer content={finalAssessment.competences_reutilisables} />
                       </div>
                     </div>
 
@@ -340,9 +349,10 @@ export default function LessonDetailPage() {
                         3. Mon plus grand défi :
                       </h3>
                       <div className="bg-white/5 rounded-xl p-6 border border-white/10">
-                        <p className="text-gray-300 whitespace-pre-line">
+                        {/*<p className="text-gray-300 whitespace-pre-line">
                           {finalAssessment.plus_grand_defi}
-                        </p>
+                        </p>  */}
+                        <MarkdownRenderer content={finalAssessment.plus_grand_defi} />
                       </div>
                     </div>
 
@@ -351,9 +361,10 @@ export default function LessonDetailPage() {
                         4. Mes prochaines étapes d'apprentissage :
                       </h3>
                       <div className="bg-white/5 rounded-xl p-6 border border-white/10">
-                        <p className="text-gray-300 whitespace-pre-line">
+                        {/*<p className="text-gray-300 whitespace-pre-line">
                           {finalAssessment.prochaines_etapes}
-                        </p>
+                        </p>*/}
+                        <MarkdownRenderer content={finalAssessment.prochaines_etapes} />
                       </div>
                     </div>
                   </div>
